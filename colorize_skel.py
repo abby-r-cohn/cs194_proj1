@@ -11,7 +11,7 @@ from skimage.util import crop
 import math
 
 # name of the input file
-imname = 'self_portrait.tif'
+imname = 'boat_small.jpg'
 
 # read in the image
 im = skio.imread(imname)
@@ -97,15 +97,15 @@ def align(ch1, ch2, scale_factor, prev_best):
 #and take the displacement with the best score.
 
 best_ssd = float("inf")
-ag = align(g, b, 1, (0,0))
+ag = align(g, b, 5, (0,0))
 
 best_ssd = float("inf")
-ar = align(r, b, 1, (0,0))
+ar = align(r, b, 5, (0,0))
 
 im_out = np.dstack([ar, ag, b])
 
 # save the image
-fname = './out_path/self_portrait.jpg'
+fname = './out_path/boat_small.jpg'
 skio.imsave(fname, im_out)
 
 # display the image
