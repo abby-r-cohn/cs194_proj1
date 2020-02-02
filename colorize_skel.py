@@ -11,7 +11,7 @@ from skimage.util import crop
 import math
 
 # name of the input file
-imname = 'boat_small.jpg'
+imname = 'tobosk.jpg'
 
 # read in the image
 im = skio.imread(imname)
@@ -37,6 +37,32 @@ def ssd(ch1, ch2):
 	sd = np.sum(np.sum((ch1 - ch2) ** 2))
 	#return SSD. the lower the error, the more similar
 	return sd
+
+def naive(ch1, ch2):
+	best_disp_vec = (0, 0)
+	best_ssd = float("inf")
+	shifted = ch1
+
+	y = -15
+	curr_x_place = ch1
+
+	for x in range(-15, 16):
+		curr_x_place = np.roll(ch1, x, axis=0)
+		while y < 16:
+			shifted = np.roll(curr_x_place, y, axis=1) #search over the window of displacememts using roll for each x,y
+			curr_ssd = ssd(shifted, ch2)
+
+			if curr_ssd < best_ssd:
+				best_ssd = curr_ssd
+				best_disp_vec = (x, y)
+			y += 1
+
+		y = -15
+	disp_vec = best_disp_vec
+	ch1 = np.roll(ch1, disp_vec[0], axis=0) 
+	ch1 = np.roll(ch1, disp_vec[1], axis=1)
+	print(disp_vec)
+	return ch1	
 
 def align(ch1, ch2, scale_factor, prev_best):
 
@@ -105,7 +131,7 @@ ar = align(r, b, 5, (0,0))
 im_out = np.dstack([ar, ag, b])
 
 # save the image
-fname = './out_path/boat_small.jpg'
+fname = './out_path/naive_test.jpg'
 skio.imsave(fname, im_out)
 
 # display the image
